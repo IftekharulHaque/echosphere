@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
 
 const formSchema = zod.object({
   name: zod.string().min(1, {
@@ -33,6 +34,11 @@ const formSchema = zod.object({
 })
 
 const InitialMosdal = () => {
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,6 +51,7 @@ const InitialMosdal = () => {
   const onSubmit = async (values: zod.infer<typeof formSchema>) => {
     console.log(values)
   }
+  if (!isMounted) return null
 
   return (
     <Dialog open>
@@ -82,10 +89,16 @@ const InitialMosdal = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage {...field} />
                   </FormItem>
                 )}
               />
             </div>
+            <DialogFooter className="bg-gray-100 px-6 py-4">
+              <Button disabled={isLoading} variant={"primary"}>
+                Create Server
+              </Button>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>
