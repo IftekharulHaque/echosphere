@@ -1,6 +1,6 @@
 "use client"
 
-import * as z from "zod"
+import * as zod from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {
@@ -23,11 +23,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
-const formSchema = z.object({
-  name: z.string().min(1, {
+const formSchema = zod.object({
+  name: zod.string().min(1, {
     message: "Server name is required",
   }),
-  imageUrl: z.string().min(1, {
+  imageUrl: zod.string().min(1, {
     message: "Server image is required",
   }),
 })
@@ -42,7 +42,7 @@ const InitialMosdal = () => {
   })
 
   const isLoading = form.formState.isSubmitting
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: zod.infer<typeof formSchema>) => {
     console.log(values)
   }
 
