@@ -25,7 +25,6 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { FileUpload } from "@/components/file-upload"
-import { log } from "console"
 import { useRouter } from "next/navigation"
 
 const formSchema = zod.object({
