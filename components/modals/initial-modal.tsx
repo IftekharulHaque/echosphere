@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
+import { FileUpload } from "@/components/file-upload"
 
 const formSchema = zod.object({
   name: zod.string().min(1, {
@@ -70,7 +71,21 @@ const InitialMosdal = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y=8 px-6">
               <div className="flex items-center justify-center text-center">
-                TODO: Upload Image
+                <FormField
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <FileUpload
+                          endpoint="serverImage"
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
               <FormField
                 control={form.control}
