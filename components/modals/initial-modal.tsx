@@ -3,6 +3,7 @@
 import * as zod from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import axios from "axios"
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
+import { FileUpload } from "@/components/file-upload"
+import { useRouter } from "next/navigation"
 
 const formSchema = zod.object({
   name: zod.string().min(1, {
@@ -35,6 +38,7 @@ const formSchema = zod.object({
 
 const InitialMosdal = () => {
   const [isMounted, setIsMounted] = useState(false)
+  const router = useRouter()
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -49,7 +53,14 @@ const InitialMosdal = () => {
 
   const isLoading = form.formState.isSubmitting
   const onSubmit = async (values: zod.infer<typeof formSchema>) => {
-    console.log(values)
+    try {
+      await axios.post("/api/servers", values)
+      form.reset()
+      router.refresh()
+      window.location.reload()
+    } catch (error) {
+      console.log(error)
+    }
   }
   if (!isMounted) return null
 
@@ -70,7 +81,21 @@ const InitialMosdal = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y=8 px-6">
               <div className="flex items-center justify-center text-center">
-                TODO: Upload Image
+                <FormField
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <FileUpload
+                          endpoint="serverImage"
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
               <FormField
                 control={form.control}
