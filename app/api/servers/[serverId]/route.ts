@@ -33,3 +33,30 @@ export async function PATCH(
     }
 
 }
+export async function DELETE(
+    req: Request,
+    { params }: { params: { serverId: string } }
+) {
+    try {
+        const Profile = await currentProfile();
+
+        if (!Profile) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+        const Server = await db.server.delete({
+            where: {
+                id: params.serverId,
+                profileId: Profile.id,
+            },
+
+
+
+        })
+        return NextResponse.json(Server);
+
+    } catch (error) {
+        console.log("[Server_ID_Delete_Error]", error);
+        return new NextResponse("Internal error", { status: 500 });
+    }
+
+}
