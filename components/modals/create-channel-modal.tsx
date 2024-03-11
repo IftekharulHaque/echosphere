@@ -33,6 +33,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useModal } from "@/hooks/use-modal-store"
 import { ChannelType } from "@prisma/client"
 import qs from "query-string"
+import { use, useEffect } from "react"
 
 const formSchema = zod.object({
   name: zod
@@ -47,19 +48,27 @@ const formSchema = zod.object({
 })
 
 const CreateChannelModal = () => {
-  const { isOpen, onClose, type } = useModal()
+  const { isOpen, onClose, type, data } = useModal()
   const router = useRouter()
   const params = useParams()
 
   const isModalOpen = isOpen && type === "createChannel"
-
+  const { channelType } = data
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: ChannelType.TEXT,
+      type: channelType || ChannelType.TEXT,
     },
   })
+
+  useEffect(() => {
+    if (channelType) {
+      form.setValue("type", channelType)
+    } else {
+      form.setValue("type", ChannelType.TEXT)
+    }
+  }, [channelType, form])
 
   const isLoading = form.formState.isSubmitting
   const onSubmit = async (values: zod.infer<typeof formSchema>) => {
