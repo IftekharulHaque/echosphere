@@ -11,8 +11,8 @@ interface ServerSectionProps {
   label: string
   role?: MemberRole
   sectionType: "channels" | "members"
-  channelType: ChannelType
-  server: ServerWithMembersWithProfiles
+  channelType?: ChannelType
+  server?: ServerWithMembersWithProfiles
 }
 
 const ServerSection = ({
@@ -31,7 +31,7 @@ const ServerSection = ({
       {role !== MemberRole.GUEST && sectionType === "channels" && (
         <ActionTooltip label="Create Channel" side="top" align="center">
           <button
-            onClick={() => onOpen("createChannel")}
+            onClick={() => onOpen("createChannel", { channelType })}
             className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
           >
             <PlusIcon className="h-4 w-4" />
@@ -39,7 +39,7 @@ const ServerSection = ({
         </ActionTooltip>
       )}
       {role === MemberRole.ADMIN && sectionType === "members" && (
-        <ActionTooltip align="center" label="Members" side="top">
+        <ActionTooltip align="center" label="Manage Members" side="top">
           <button
             onClick={() => onOpen("members", { server })}
             className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
