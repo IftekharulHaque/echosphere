@@ -39,7 +39,7 @@ export const ServerMember = ({ member, server }: ServerMembersProps) => {
       />
       <p
         className={cn(
-          "font-semibold text-sm text-zinc-500 group-hover:text-zonc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transition",
+          "font-semibold text-xs text-zinc-500 group-hover:text-zonc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transition",
           params?.memberId === member.id &&
             "text-primary dark:text-zinc-200 dark:group-hover:text-white"
         )}
