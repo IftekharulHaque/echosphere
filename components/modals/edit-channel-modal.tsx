@@ -78,7 +78,6 @@ const EditChannelModal = () => {
       })
       await axios.patch(url, values)
       form.reset()
-
       onClose()
       router.refresh()
     } catch (error) {
