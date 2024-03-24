@@ -5,7 +5,8 @@ import * as z from "zod"
 import { Form, FormControl, FormField, FormItem } from "../ui/form"
 import { Plus, Smile } from "lucide-react"
 import { Input } from "../ui/input"
-import { channel } from "diagnostics_channel"
+import qs from "query-string"
+import axios from "axios"
 interface ChattInputProps {
   apiUrl: string
   query: Record<string, any>
@@ -27,8 +28,17 @@ const ChatInput = ({ apiUrl, name, type, query }: ChattInputProps) => {
 
   const isLoading = form.formState.isSubmitting
 
-  const onSubmit = async (value: z.infer<typeof formSchema>) => {
-    console.log(value)
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const url = qs.stringifyUrl({
+        url: apiUrl,
+        query,
+      })
+
+      axios.post(url, values)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
