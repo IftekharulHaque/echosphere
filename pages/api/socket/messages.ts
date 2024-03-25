@@ -64,6 +64,29 @@ export default async function handler(
             return res.status(404).json({ message: "Member not found" })
         }
 
+        const message = await db.message.create({
+            data: {
+                content,
+                fileUrl,
+                channelId: channelId as string,
+                memberId: member.id
+            },
+            include: {
+                member: {
+                    include: {
+                        profile: true
+                    }
+                }
+            }
+
+        })
+
+        const channelKey = `chat:${channelId}:messages`
+
+        res?.socket?.server?.io?.emit(channelKey, message)
+
+        return res.status(200).json(message)
+
     } catch (error) {
         console.log("Messages_POST", error);
         return res.status(500).json({ message: "Internal error" })
