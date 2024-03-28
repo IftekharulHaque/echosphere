@@ -30,8 +30,8 @@ import { useModal } from "@/hooks/use-modal-store"
 import qs from "query-string"
 
 const formSchema = zod.object({
-  imageUrl: zod.string().min(1, {
-    message: "Server image is required",
+  fileUrl: zod.string().min(1, {
+    message: "Attachment is required",
   }),
 })
 
@@ -44,8 +44,7 @@ const MessageFileModal = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      imageUrl: "",
+      fileUrl: "",
     },
   })
   const { apiUrl, query } = data
@@ -65,7 +64,7 @@ const MessageFileModal = () => {
       await axios.post(url, { ...values, content: values.fileUrl })
       form.reset()
       router.refresh()
-      window.location.reload()
+      handleClose()
     } catch (error) {
       console.log(error)
     }
@@ -89,7 +88,7 @@ const MessageFileModal = () => {
               <div className="flex items-center justify-center text-center">
                 <FormField
                   control={form.control}
-                  name="imageUrl"
+                  name="fileUrl"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
