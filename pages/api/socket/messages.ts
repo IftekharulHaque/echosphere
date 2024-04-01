@@ -88,7 +88,7 @@ export default async function handler(
         return res.status(200).json(message)
 
     } catch (error) {
-        console.log("Messages_POST", error);
+        console.log("Messages_POST_SOCKET", error);
         return res.status(500).json({ message: "Internal error" })
 
     }

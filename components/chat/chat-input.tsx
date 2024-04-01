@@ -12,7 +12,7 @@ import { EmojiPicker } from "../emoji-picker"
 import { useRouter } from "next/navigation"
 interface ChattInputProps {
   apiUrl: string
-  query: Record<string, any>
+  query: Record<string, string>
   name: string
   type: "channel" | "conversation"
 }
@@ -22,7 +22,7 @@ const formSchema = z.object({
 })
 
 const ChatInput = ({ apiUrl, name, type, query }: ChattInputProps) => {
-  const { onOpen, isOpen, data, onClose } = useModal()
+  const { onOpen } = useModal()
 
   const router = useRouter()
 
@@ -42,7 +42,8 @@ const ChatInput = ({ apiUrl, name, type, query }: ChattInputProps) => {
         query,
       })
 
-      axios.post(url, values)
+      await axios.post(url, values)
+
       form.reset()
       router.refresh()
     } catch (error) {
