@@ -1,9 +1,12 @@
 "use client"
 
-import { Member, Profile } from "@prisma/client"
+import { Member, MemberRole, Profile } from "@prisma/client"
 import UserAvatar from "../user-avatar"
 import { ActionTooltip } from "../ui/action-tooltip"
-import { ShieldAlert, ShieldCheck } from "lucide-react"
+import { FileIcon, ShieldAlert, ShieldCheck } from "lucide-react"
+import Image from "next/image"
+import { useState } from "react"
+import { cn } from "@/lib/utils"
 
 interface ChatItemProps {
   id: string
@@ -38,6 +41,18 @@ export const ChatItem = ({
   socketUrl,
   timestamp,
 }: ChatItemProps) => {
+  const [isEditing, setIsEditing] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const fileType = fileUrl?.split(".").pop()
+  const isAdmin = currentMember.role === MemberRole.ADMIN
+  const isModerator = currentMember.role === MemberRole.MODERATOR
+  const isOwner = currentMember.id === member.id
+  const canDeleteMesssage = !deleted && (isAdmin || isModerator || isOwner)
+  const canEditMessage = !deleted && isOwner && !fileUrl
+  const isPdf = fileType === "pdf" && fileUrl
+  const isImg = !isPdf && fileUrl
+
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div className="group flex gap-x-2 items-start w-full">
@@ -58,7 +73,48 @@ export const ChatItem = ({
               {timestamp}
             </span>
           </div>
-          {content}
+          {isImg && (
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative aspect-square rounded-md overflow-hidden flex items-center bg-transparent h-48 w-48"
+            >
+              <Image
+                src={fileUrl}
+                alt={content}
+                fill
+                className="object-contain"
+              />
+            </a>
+          )}
+          {isPdf && (
+            <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10 w-56">
+              <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+              <a
+                href={fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline"
+              >
+                PDF File
+              </a>
+            </div>
+          )}
+          {!fileUrl && !isEditing && (
+            <p
+              className={cn(
+                "text-sm text-zinc-600 dark:text-zinc-300",
+                deleted &&
+                  "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1"
+              )}
+            >
+              {content}
+              {isUpdated && !deleted && (
+                <span className="text-[10px]">(edited) </span>
+              )}
+            </p>
+          )}
         </div>
       </div>
     </div>
