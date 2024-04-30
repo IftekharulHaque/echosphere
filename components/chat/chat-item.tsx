@@ -23,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
+import { useModal } from "@/hooks/use-modal-store"
 interface ChatItemProps {
   id: string
   content: string
@@ -61,8 +62,8 @@ export const ChatItem = ({
   timestamp,
 }: ChatItemProps) => {
   const [isEditing, setIsEditing] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
 
+  const { onOpen } = useModal()
   useEffect(() => {
     const handleKeyDown = (e: any) => {
       if (e.key === "Escape" || e.key === 27) {
@@ -87,7 +88,9 @@ export const ChatItem = ({
         url: `${socketUrl}/${id}`,
         query: socketQuery,
       })
-      await axios.put(url, values)
+      await axios.patch(url, values)
+      form.reset()
+      setIsEditing(false)
     } catch (error) {
       console.log(error)
     }
@@ -220,7 +223,12 @@ export const ChatItem = ({
           <ActionTooltip label={"Delete"} side={"top"} align={"center"}>
             <Trash
               className="h-4 w-4 ml-auto text-zinc-500 dark:hover:text-zinc-300 hover:text-zinc-600 transition cursor-pointer"
-              onClick={() => setIsEditing(true)}
+              onClick={() =>
+                onOpen("deleteMessage", {
+                  apiUrl: `${socketUrl}/${id}`,
+                  query: socketQuery,
+                })
+              }
             />
           </ActionTooltip>
         </div>
