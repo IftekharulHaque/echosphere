@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { useModal } from "@/hooks/use-modal-store"
+import { useParams, useRouter } from "next/navigation"
 interface ChatItemProps {
   id: string
   content: string
@@ -64,6 +65,16 @@ export const ChatItem = ({
   const [isEditing, setIsEditing] = useState(false)
 
   const { onOpen } = useModal()
+  const router = useRouter()
+  const params = useParams()
+
+  const onMemberClick = () => {
+    if (member.id === currentMember.id) {
+      console.log("You clicked on your own name")
+      return
+    }
+    router.push(`/servers/${params?.serverId}/conversations/${member.id}`)
+  }
   useEffect(() => {
     const handleKeyDown = (e: any) => {
       if (e.key === "Escape" || e.key === 27) {
@@ -114,13 +125,19 @@ export const ChatItem = ({
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div className="group flex gap-x-2 items-start w-full">
-        <div className="cursor-pointer hover:drop-shadow-md transition">
+        <div
+          className="cursor-pointer hover:drop-shadow-md transition"
+          onClick={onMemberClick}
+        >
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="font-semibold text-sm hover:underline cursor-pointer">
+              <p
+                className="font-semibold text-sm hover:underline cursor-pointer"
+                onClick={onMemberClick}
+              >
                 {member.profile.name}
               </p>
               <ActionTooltip label={member.role} side={"right"} align={"start"}>
