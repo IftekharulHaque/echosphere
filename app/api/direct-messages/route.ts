@@ -1,6 +1,6 @@
 import { currentProfile } from "@/lib/current-profile"
 import { db } from "@/lib/db"
-import { Message } from "@prisma/client"
+import { DirectMessage } from "@prisma/client"
 import { NextResponse } from "next/server"
 
 
@@ -11,24 +11,24 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url)
 
         const cursor = searchParams.get("cursor")
-        const channelId = searchParams.get("channelId")
+        const conversationId = searchParams.get("conversationId")
 
         if (!profile) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
-        if (!channelId) {
-            return new NextResponse("ChannelId missing", { status: 400 })
+        if (!conversationId) {
+            return new NextResponse("conversationId missing", { status: 400 })
         }
-        let messages: Message[] = []
+        let messages: DirectMessage[] = []
         if (cursor) {
-            messages = await db.message.findMany({
+            messages = await db.directMessage.findMany({
                 take: Message_Batch,
                 skip: 1,
                 cursor: {
                     id: cursor
                 },
                 where: {
-                    channelId
+                    conversationId
                 },
                 include: {
                     member: {
@@ -39,14 +39,14 @@ export async function GET(req: Request) {
                     }
                 },
                 orderBy: {
-                    createdAt: "desc"
+                    ceatedAt: "desc"
                 }
             })
         } else {
-            messages = await db.message.findMany({
+            messages = await db.directMessage.findMany({
                 take: Message_Batch,
                 where: {
-                    channelId
+                    conversationId
                 },
                 include: {
                     member: {
@@ -56,7 +56,7 @@ export async function GET(req: Request) {
                     }
                 },
                 orderBy: {
-                    createdAt: "desc"
+                    ceatedAt: "desc"
                 },
 
             })
@@ -70,7 +70,7 @@ export async function GET(req: Request) {
             nextCursor
         })
     } catch (error) {
-        console.log("[Messages_get]", error)
+        console.log("[Direct_Messages_get]", error)
         return new NextResponse("Internal Error", { status: 500 })
     }
 }
