@@ -9,8 +9,9 @@ import { ElementRef, Fragment, useRef } from "react"
 import { ChatItem } from "./chat-item"
 import { format } from "date-fns"
 import { useChatSocket } from "@/hooks/use-chat-socket"
+import { useChatScroll } from "@/hooks/use-chat-scroll"
 
-const DATE_FORMAT = "dd MM yyyy, hh:mm a"
+const DATE_FORMAT = "dd/MM/yyyy hh:mm a"
 
 type MessageWithMemberWithProfile = Message & {
   member: Member & {
@@ -44,7 +45,7 @@ const ChatMessages = ({
   const addKey = `chat:${chatId}:messages`
   const updateKey = `chat:${chatId}:messages:update`
   const chatRef = useRef<ElementRef<"div">>(null)
-  const buttomRef = useRef<ElementRef<"div">>(null)
+  const bottomRef = useRef<ElementRef<"div">>(null)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useChatQuery({
@@ -57,6 +58,13 @@ const ChatMessages = ({
     queryKey,
     addKey,
     updateKey,
+  })
+  useChatScroll({
+    chatRef,
+    bottomRef,
+    loadMore: fetchNextPage,
+    shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+    count: data?.pages?.[0]?.items?.length ?? 0,
   })
 
   if (status === "pending") {
@@ -90,7 +98,12 @@ const ChatMessages = ({
           {isFetchingNextPage ? (
             <Loader2 className="h-6 w-6 text-zinc-500 animate-spin my-4" />
           ) : (
-            <button className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 text-xs my-4 dark:hover:text-zinc-300 transition"   onClick={()=>fetchNextPage()}>Load previous messages</button>
+            <button
+              className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 text-xs my-4 dark:hover:text-zinc-300 transition"
+              onClick={() => fetchNextPage()}
+            >
+              Load previous messages
+            </button>
           )}
         </div>
       )}
@@ -116,7 +129,7 @@ const ChatMessages = ({
         ))}
       </div>
 
-      <div ref={buttomRef}></div>
+      <div ref={bottomRef}></div>
     </div>
   )
 }
